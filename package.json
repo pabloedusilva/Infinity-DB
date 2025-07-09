@@ -1,34 +1,48 @@
 {
-  "name": "naregua-barberapp",
+  "name": "mais-horas-database-manager",
   "version": "1.0.0",
-  "description": "Sistema de agendamento para barbearia",
-  "main": "server.js",
+  "description": "Sistema inteligente de monitoramento e backup de bancos de dados Neon",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "node tests/test.js",
+    "init": "node scripts/initialize.js",
+    "init-simple": "node scripts/init-simple.js",
+    "status": "node -e \"const Scheduler = require('./core/scheduler'); const s = new Scheduler(); s.getSystemReport().then(console.log)\"",
+    "backup": "node -e \"const Scheduler = require('./core/scheduler'); const s = new Scheduler(); s.forceBackup().then(r => console.log(r ? '✅ Backup OK' : '❌ Erro'))\"",
+    "switch": "node -e \"const Scheduler = require('./core/scheduler'); const s = new Scheduler(); s.forceDatabaseSwitch().then(r => console.log(r ? '✅ Switch OK' : '❌ Erro'))\""
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pabloedusilva/NaRegua-BarberApp.git"
+  "keywords": [
+    "database",
+    "backup",
+    "neon",
+    "postgresql",
+    "automatic",
+    "monitoring",
+    "failover",
+    "hours-management",
+    "intelligent-switching"
+  ],
+  "author": {
+    "name": "Pablo Eduardo Silva",
+    "email": "pablo@naregua.com",
+    "url": "https://github.com/naregua"
   },
-  "keywords": [],
-  "author": "Pablo Eduardo Silva",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/pabloedusilva/NaRegua-BarberApp/issues"
-  },
-  "homepage": "https://github.com/pabloedusilva/NaRegua-BarberApp#readme",
+  "license": "MIT",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
-    "dotenv": "^16.5.0",
     "express": "^4.18.2",
-    "express-session": "^1.18.1",
-    "multer": "^2.0.1",
-    "mysql2": "^3.14.1",
-    "node-cron": "^4.0.5",
-    "nodemailer": "^7.0.3",
-    "pdfkit": "^0.17.1",
-    "sharp": "^0.34.2",
-    "web-push": "^3.6.7"
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "dotenv": "^16.5.0",
+    "node-cron": "^4.0.5"
   },
-  "type": "commonjs"
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }
