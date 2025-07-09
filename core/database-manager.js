@@ -60,10 +60,23 @@ class DatabaseManager {
     }
 
     async trackActivity(dbName) {
+        // Garantir que os dados de uso estão carregados
+        await this.ensureUsageLoaded();
+        
         const usage = this.usageTracking[dbName];
         
-        usage.queries += 1;
-        usage.lastActivity = new Date().toISOString();
+        if (!usage) {
+            // Se ainda não existe, criar novo tracking
+            this.usageTracking[dbName] = {
+                monthlyUsage: 0,
+                lastReset: new Date().toISOString(),
+                queries: 0,
+                lastActivity: new Date().toISOString()
+            };
+        }
+        
+        this.usageTracking[dbName].queries += 1;
+        this.usageTracking[dbName].lastActivity = new Date().toISOString();
         
         await this.saveUsageData(dbName);
     }

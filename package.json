@@ -1,12 +1,13 @@
 {
-  "name": "mais-horas-database-manager",
+  "name": "infinity-db",
   "version": "1.0.0",
-  "description": "Sistema inteligente de monitoramento e backup de bancos de dados Neon",
-  "main": "app.js",
+  "description": "Sistema inteligente de manipulação e backup automático de bancos de dados Neon para integração em aplicativos Node.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "standalone": "node scripts/standalone.js",
+    "demo": "node scripts/demo.js",
     "test": "node tests/test.js",
+    "test-integration": "node test-integration.js",
     "init": "node scripts/initialize.js",
     "init-simple": "node scripts/init-simple.js",
     "status": "node -e \"const Scheduler = require('./core/scheduler'); const s = new Scheduler(); s.getSystemReport().then(console.log)\"",

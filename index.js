@@ -1,30 +1,27 @@
 /**
- * 🔄 Mais Horas - Database Manager
+ * 🔄 Infinity-DB - Sistema de Manipulação de Banco de Dados
  * 
- * Sistema inteligente de monitoramento e backup automático
- * de bancos de dados Neon com dashboard web e API REST.
+ * Sistema inteligente de backup e manipulação automática de bancos de dados Neon
+ * para integração fácil em aplicativos Node.js existentes.
  * 
  * @author Pablo Eduardo Silva
  * @version 1.0.0
+ * @description Drop-in replacement para @neondatabase/serverless com backup automático
  */
 
-// Para usar como aplicação independente
-const app = require('./app');
-
-// Exportar componentes para uso programático
+// Exportar componentes principais para uso programático
 module.exports = {
-    // Aplicação Express
-    app: app,
-    
-    // Core do sistema
+    // Sistema inteligente de banco (substituto do neon)
     SmartDatabase: require('./core/smart-db'),
+    
+    // Componentes do sistema
     DatabaseManager: require('./core/database-manager'), 
     BackupScheduler: require('./core/scheduler'),
     
     // Configurações
     config: require('./config/config'),
     
-    // API Routes
+    // API Routes para controle
     apiRoutes: require('./api/api-routes'),
     
     // Utilitários
@@ -34,5 +31,8 @@ module.exports = {
     }
 };
 
-// Para uso direto como substituto do neon (compatibilidade)
+// Para uso direto como substituto do neon (recomendado)
 module.exports.default = require('./core/smart-db');
+
+// Para compatibilidade com import default
+module.exports.createSmartDatabase = () => require('./core/smart-db');

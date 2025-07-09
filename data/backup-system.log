@@ -451,3 +451,14 @@
 [2025-07-09T12:00:49.402Z] � Banco ativo atual: PRIMARY
 [2025-07-09T12:01:03.159Z] ✅ Conexões com bancos inicializadas
 [2025-07-09T12:01:03.171Z] 📊 Dados de uso carregados
+[2025-07-09T13:29:35.354Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T13:29:35.404Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T13:29:35.408Z] 📊 Dados de uso carregados
+[2025-07-09T13:29:37.808Z] ❌ Erro na query no banco primary: "Cannot read properties of undefined (reading 'queries')"
+[2025-07-09T13:29:37.809Z] 🔄 Tentando query no banco secundário...
+[2025-07-09T13:31:01.899Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T13:31:01.945Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T13:31:01.955Z] 📊 Dados de uso carregados
+[2025-07-09T13:31:02.664Z] 📊 Dados de uso carregados
+[2025-07-09T13:31:49.541Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T13:31:49.547Z] 📊 Dados de uso carregados

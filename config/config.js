@@ -1,6 +1,25 @@
 // Configurações do sistema de backup automático baseado em data
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+// Tentar carregar .env da raiz do projeto pai (para integração)
+const envPaths = [
+    path.join(__dirname, '../../.env'),     // Raiz do projeto pai
+    path.join(__dirname, '../.env'),        // Dentro da pasta infinity-db
+    path.join(process.cwd(), '.env')        // Diretório atual de execução
+];
+
+// Carregar o primeiro .env encontrado
+for (const envPath of envPaths) {
+    try {
+        require('dotenv').config({ path: envPath });
+        if (process.env.DATABASE_URL) {
+            console.log('🔧 Infinity-DB: Configuração carregada de', envPath);
+            break;
+        }
+    } catch (error) {
+        // Arquivo não existe, tentar próximo
+    }
+}
 
 const config = {
     // Configurações dos bancos de dados
