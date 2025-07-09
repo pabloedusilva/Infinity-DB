@@ -1,4 +1,4 @@
-// Configurações do sistema de backup automático
+// Configurações do sistema de backup automático baseado em data
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
@@ -8,31 +8,26 @@ const config = {
         primary: {
             name: 'PRIMARY',
             url: process.env.DATABASE_URL,
-            // Limite de horas mensais (190h para ter margem de segurança)
-            monthlyLimit: 190 * 60 * 60 * 1000, // em millisegundos
             usageFile: path.join(__dirname, '../data/usage-primary.json')
         },
         secondary: {
             name: 'SECONDARY', 
             url: process.env.DATABASE_URL_BACKUP,
-            monthlyLimit: 190 * 60 * 60 * 1000,
             usageFile: path.join(__dirname, '../data/usage-secondary.json')
         }
     },
 
     // Configurações de monitoramento
     monitoring: {
-        // Verificar uso a cada 6 horas
-        checkInterval: 6 * 60 * 60 * 1000,
-        // Fazer backup quando usar 85% do limite
-        backupThreshold: 0.85,
-        // Alternar quando usar 90% do limite
-        switchThreshold: 0.90,
+        // Verificar status a cada 12 horas
+        checkInterval: 12 * 60 * 60 * 1000,
         // Log de atividades
-        logFile: path.join(__dirname, '../data/backup-system.log')
+        logFile: path.join(__dirname, '../data/backup-system.log'),
+        // Sistema baseado em data (não usa mais limites de uso)
+        systemType: 'date-based'
     },
 
-    // Configurações de backup
+    // Configurações de backup baseado em data
     backup: {
         // Tabelas para fazer backup (todas as principais)
         tables: [
@@ -52,7 +47,12 @@ const config = {
         // Diretório para arquivos temporários
         tempDir: path.join(__dirname, '../temp-backups'),
         // Manter backups por 7 dias
-        retentionDays: 7
+        retentionDays: 7,
+        // Backup automático nos dias específicos
+        backupDays: [24, 25],
+        // Troca automática no dia 25 às 23h
+        switchDay: 25,
+        switchHour: 23
     },
 
     // Notificações

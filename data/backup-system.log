@@ -442,3 +442,12 @@
 [2025-07-09T11:27:21.642Z] 📊 Dados de uso carregados
 [2025-07-09T11:27:21.643Z] ✅ primary: 0% de uso - Normal
 [2025-07-09T11:27:21.645Z] ✅ secondary: 0% de uso - Normal
+[2025-07-09T12:00:43.448Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T12:00:48.487Z] � Verificação de saúde do sistema
+[2025-07-09T12:00:49.400Z] ✅ PRIMARY: Conectado - 538ms
+[2025-07-09T12:00:49.400Z] ✅ SECONDARY: Conectado - 372ms
+[2025-07-09T12:00:49.401Z] 📅 Próximo backup: dia 24 às 3h
+[2025-07-09T12:00:49.401Z] 🔄 Próxima alternância: dia 25 às 23h
+[2025-07-09T12:00:49.402Z] � Banco ativo atual: PRIMARY
+[2025-07-09T12:01:03.159Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T12:01:03.171Z] 📊 Dados de uso carregados

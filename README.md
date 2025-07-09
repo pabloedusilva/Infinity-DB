@@ -1,15 +1,15 @@
-# 🔄 Mais Horas - Database Manager
+# 🔄 Infinity-DB - Database Manager
 
-Sistema inteligente de monitoramento e backup automático de bancos de dados Neon com alternância automática e dashboard web.
+Sistema inteligente de backup e alternância automática de bancos de dados Neon baseado em datas, com dashboard web executivo.
 
 ## 🎯 O que faz?
 
-- **Monitora** o uso de dois bancos de dados Neon
-- **Alterna automaticamente** quando um banco atinge 90% do limite mensal
-- **Faz backup** automático quando atinge 85% do limite
-- **Dashboard web** para monitoramento em tempo real
+- **Faz backup automático** nos dias 24 e 25 de cada mês às 3h
+- **Alterna automaticamente** entre bancos no dia 25 às 23h de cada mês
+- **Dashboard web executivo** para monitoramento em tempo real
 - **API REST** para controle programático
 - **Logs detalhados** de todas as operações
+- **Zero downtime** durante a alternância entre bancos
 
 ## 🚀 Instalação Rápida
 
@@ -124,22 +124,30 @@ await fetch('http://localhost:3001/api/backup/force-backup', {
 
 ## ⚙️ Configurações
 
-### Thresholds (Limites)
+### Programação de Backup e Alternância
 
-- **Backup automático**: 85% do uso mensal
-- **Troca automática**: 90% do uso mensal  
-- **Verificação**: A cada 6 horas
-- **Backup preventivo**: Diário às 3h
+- **Backup automático**: Dias 24 e 25 às 3h da manhã
+- **Alternância automática**: Dia 25 às 23h
+- **Verificação**: A cada 12 horas
+- **Limpeza de logs**: Semanal (domingo às 2h)
 
 ### Personalização
 
 Edite `config/config.js` para personalizar:
 
 ```javascript
-monitoring: {
-    checkInterval: 6 * 60 * 60 * 1000,  // 6 horas
-    backupThreshold: 0.85,               // 85%
-    switchThreshold: 0.90                // 90%
+backup: {
+    // Tabelas para fazer backup (todas as principais)
+    tables: ['usuarios', 'agendamentos', ...],
+    // Diretório para arquivos temporários
+    tempDir: path.join(__dirname, '../temp-backups'),
+    // Manter backups por 7 dias
+    retentionDays: 7,
+    // Backup automático nos dias específicos
+    backupDays: [24, 25],
+    // Troca automática no dia 25 às 23h
+    switchDay: 25,
+    switchHour: 23
 }
 ```
 
@@ -147,9 +155,9 @@ monitoring: {
 
 ### Arquivos de Dados
 
-- `data/usage-primary.json` - Uso do banco primário
-- `data/usage-secondary.json` - Uso do banco secundário  
-- `data/backup-system.log` - Log de todas as operações
+- `data/usage-primary.json` - Estatísticas do banco primário
+- `data/usage-secondary.json` - Estatísticas do banco secundário  
+- `data/backup-system.log` - Log detalhado de todas as operações
 
 ### Logs
 
@@ -194,18 +202,18 @@ mais-horas-database-manager/
 ## 🌟 Recursos
 
 - ✅ **Zero downtime** - Alternância sem interrupção
-- ✅ **Interface web** - Dashboard completo
+- ✅ **Interface web executiva** - Dashboard completo com ícones SVG
 - ✅ **API REST** - Controle programático  
 - ✅ **Logs detalhados** - Rastreamento completo
 - ✅ **Auto-recovery** - Recuperação automática
-- ✅ **Configurável** - Thresholds personalizáveis
+- ✅ **Agendamento por data** - Backup e alternância em datas fixas
 
 ## 📈 Performance
 
 - **Overhead mínimo**: ~1-2ms por query
-- **Backup inteligente**: Apenas quando necessário
-- **Monitoramento eficiente**: Verificação a cada 6h
-- **Recuperação rápida**: Troca automática em segundos
+- **Backup programado**: Dias específicos do mês
+- **Monitoramento eficiente**: Verificação a cada 12h
+- **Alternância programada**: Dia 25 às 23h todo mês
 
 ## 🤝 Suporte
 

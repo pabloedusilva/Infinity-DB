@@ -182,19 +182,23 @@ router.get('/config', (req, res) => {
     try {
         // Remover URLs sensíveis da configuração
         const safeConfig = {
-            monitoring: config.monitoring,
+            monitoring: {
+                checkInterval: config.monitoring.checkInterval,
+                systemType: config.monitoring.systemType || 'date-based'
+            },
             backup: {
                 tables: config.backup.tables,
-                retentionDays: config.backup.retentionDays
+                retentionDays: config.backup.retentionDays,
+                backupDays: config.backup.backupDays || [24, 25],
+                switchDay: config.backup.switchDay || 25,
+                switchHour: config.backup.switchHour || 23
             },
             databases: {
                 primary: {
-                    name: config.databases.primary.name,
-                    monthlyLimit: config.databases.primary.monthlyLimit
+                    name: config.databases.primary.name
                 },
                 secondary: {
-                    name: config.databases.secondary.name,
-                    monthlyLimit: config.databases.secondary.monthlyLimit
+                    name: config.databases.secondary.name
                 }
             }
         };

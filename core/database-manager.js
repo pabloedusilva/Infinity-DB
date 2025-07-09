@@ -59,38 +59,13 @@ class DatabaseManager {
         }
     }
 
-    async trackQuery(dbName, queryStartTime) {
-        const duration = Date.now() - queryStartTime;
+    async trackActivity(dbName) {
         const usage = this.usageTracking[dbName];
         
-        usage.monthlyUsage += duration;
         usage.queries += 1;
         usage.lastActivity = new Date().toISOString();
         
         await this.saveUsageData(dbName);
-        return duration;
-    }
-
-    async resetMonthlyUsage(dbName) {
-        const usage = this.usageTracking[dbName];
-        const lastReset = new Date(usage.lastReset);
-        const now = new Date();
-        
-        // Reset se passou um mês
-        if (now.getMonth() !== lastReset.getMonth() || 
-            now.getFullYear() !== lastReset.getFullYear()) {
-            usage.monthlyUsage = 0;
-            usage.queries = 0;
-            usage.lastReset = now.toISOString();
-            await this.saveUsageData(dbName);
-            this.log(`🔄 Reset mensal do banco ${dbName}`);
-        }
-    }
-
-    getUsagePercentage(dbName) {
-        const usage = this.usageTracking[dbName];
-        const limit = this.config.databases[dbName].monthlyLimit;
-        return (usage.monthlyUsage / limit) * 100;
     }
 
     async ensureUsageLoaded() {
@@ -100,33 +75,25 @@ class DatabaseManager {
         }
     }
 
-    // MÉTODOS OBSOLETOS - Sistema agora é baseado em data, não em uso
-    // async shouldSwitchDatabase() {
-    //     await this.ensureUsageLoaded();
-    //     await this.resetMonthlyUsage(this.currentDatabase);
-    //     const currentUsage = this.getUsagePercentage(this.currentDatabase);
-    //     const threshold = this.config.monitoring.switchThreshold * 100;
-    //     
-    //     if (currentUsage >= threshold) {
-    //         this.log(`⚠️ Banco ${this.currentDatabase} atingiu ${currentUsage.toFixed(2)}% do limite`);
-    //         return true;
-    //     }
-    //     
-    //     return false;
-    // }
+    // Verificar se hoje é dia de backup
+    async shouldBackupToday() {
+        const now = new Date();
+        const day = now.getDate();
+        const backupDays = this.config.backup.backupDays || [24, 25];
+        
+        return backupDays.includes(day);
+    }
 
-    // async shouldBackup() {
-    //     await this.ensureUsageLoaded();
-    //     const currentUsage = this.getUsagePercentage(this.currentDatabase);
-    //     const threshold = this.config.monitoring.backupThreshold * 100;
-    //     
-    //     if (currentUsage >= threshold) {
-    //         this.log(`📦 Necessário backup - uso atual: ${currentUsage.toFixed(2)}%`);
-    //         return true;
-    //     }
-    //     
-    //     return false;
-    // }
+    // Verificar se hoje é dia de alternar os bancos
+    async shouldSwitchToday() {
+        const now = new Date();
+        const day = now.getDate();
+        const hour = now.getHours();
+        const switchDay = this.config.backup.switchDay || 25;
+        const switchHour = this.config.backup.switchHour || 23;
+        
+        return day === switchDay && hour >= switchHour;
+    }
 
     async executeQuery(query, params = []) {
         const startTime = Date.now();
@@ -152,7 +119,7 @@ class DatabaseManager {
                 result = await queryFunc(connection);
             }
             
-            await this.trackQuery(this.currentDatabase, startTime);
+            await this.trackActivity(this.currentDatabase);
             return result;
             
         } catch (error) {
@@ -178,7 +145,7 @@ class DatabaseManager {
                         secondaryResult = await queryFunc(this.connections.secondary);
                     }
                     
-                    await this.trackQuery('secondary', startTime);
+                    await this.trackActivity('secondary');
                     return secondaryResult;
                 } catch (secondaryError) {
                     this.log('❌ Falha também no banco secundário:', secondaryError.message);
@@ -307,7 +274,7 @@ class DatabaseManager {
             timestamp: new Date().toISOString(),
             previousDb: this.currentDatabase === 'primary' ? 'secondary' : 'primary',
             currentDb: this.currentDatabase,
-            usagePercentage: this.getUsagePercentage(this.currentDatabase === 'primary' ? 'secondary' : 'primary')
+            systemType: 'date-based'
         };
         
         this.log(message, details);
@@ -328,18 +295,34 @@ class DatabaseManager {
                 console.log(`📊 Processando banco ${dbName}...`);
                 const usage = this.usageTracking[dbName];
                 
-                // Para o novo sistema baseado em data, mostrar estatísticas simples
+                // Sistema baseado em data
                 const currentDate = new Date();
                 const lastActivity = new Date(usage.lastActivity);
                 const daysSinceActivity = Math.floor((currentDate - lastActivity) / (1000 * 60 * 60 * 24));
                 
+                // Próximo backup
+                const day = currentDate.getDate();
+                let nextBackupDay = '';
+                if (day < 24) {
+                    nextBackupDay = 'Dia 24';
+                } else if (day === 24) {
+                    nextBackupDay = 'Hoje às 3h';
+                } else if (day === 25) {
+                    nextBackupDay = 'Hoje às 3h';
+                } else {
+                    const nextMonth = new Date();
+                    nextMonth.setMonth(nextMonth.getMonth() + 1);
+                    nextMonth.setDate(24);
+                    nextBackupDay = `${nextMonth.getDate()}/${nextMonth.getMonth() + 1}`;
+                }
+                
                 status[dbName] = {
-                    usage: 'Sistema baseado em data', // Não mais baseado em percentual
                     queries: usage.queries,
                     lastActivity: usage.lastActivity,
                     daysSinceActivity: daysSinceActivity,
                     isActive: dbName === this.currentDatabase,
-                    systemMode: 'date-based'
+                    systemMode: 'date-based',
+                    nextBackupDay: nextBackupDay
                 };
                 
                 console.log(`✅ Banco ${dbName}: ${usage.queries} queries executadas`);
