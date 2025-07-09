@@ -100,42 +100,38 @@ class DatabaseManager {
         }
     }
 
-    async shouldSwitchDatabase() {
-        await this.ensureUsageLoaded();
-        await this.resetMonthlyUsage(this.currentDatabase);
-        const currentUsage = this.getUsagePercentage(this.currentDatabase);
-        const threshold = this.config.monitoring.switchThreshold * 100;
-        
-        if (currentUsage >= threshold) {
-            this.log(`⚠️ Banco ${this.currentDatabase} atingiu ${currentUsage.toFixed(2)}% do limite`);
-            return true;
-        }
-        
-        return false;
-    }
+    // MÉTODOS OBSOLETOS - Sistema agora é baseado em data, não em uso
+    // async shouldSwitchDatabase() {
+    //     await this.ensureUsageLoaded();
+    //     await this.resetMonthlyUsage(this.currentDatabase);
+    //     const currentUsage = this.getUsagePercentage(this.currentDatabase);
+    //     const threshold = this.config.monitoring.switchThreshold * 100;
+    //     
+    //     if (currentUsage >= threshold) {
+    //         this.log(`⚠️ Banco ${this.currentDatabase} atingiu ${currentUsage.toFixed(2)}% do limite`);
+    //         return true;
+    //     }
+    //     
+    //     return false;
+    // }
 
-    async shouldBackup() {
-        await this.ensureUsageLoaded();
-        const currentUsage = this.getUsagePercentage(this.currentDatabase);
-        const threshold = this.config.monitoring.backupThreshold * 100;
-        
-        if (currentUsage >= threshold) {
-            this.log(`📦 Necessário backup - uso atual: ${currentUsage.toFixed(2)}%`);
-            return true;
-        }
-        
-        return false;
-    }
+    // async shouldBackup() {
+    //     await this.ensureUsageLoaded();
+    //     const currentUsage = this.getUsagePercentage(this.currentDatabase);
+    //     const threshold = this.config.monitoring.backupThreshold * 100;
+    //     
+    //     if (currentUsage >= threshold) {
+    //         this.log(`📦 Necessário backup - uso atual: ${currentUsage.toFixed(2)}%`);
+    //         return true;
+    //     }
+    //     
+    //     return false;
+    // }
 
     async executeQuery(query, params = []) {
         const startTime = Date.now();
         
         try {
-            // Verificar se precisa trocar de banco antes da query
-            if (await this.shouldSwitchDatabase()) {
-                await this.switchToBackupDatabase();
-            }
-            
             const connection = this.connections[this.currentDatabase];
             let result;
             
@@ -330,18 +326,23 @@ class DatabaseManager {
             
             for (const [dbName] of Object.entries(this.config.databases)) {
                 console.log(`📊 Processando banco ${dbName}...`);
-                await this.resetMonthlyUsage(dbName);
                 const usage = this.usageTracking[dbName];
-                const percentage = this.getUsagePercentage(dbName);
+                
+                // Para o novo sistema baseado em data, mostrar estatísticas simples
+                const currentDate = new Date();
+                const lastActivity = new Date(usage.lastActivity);
+                const daysSinceActivity = Math.floor((currentDate - lastActivity) / (1000 * 60 * 60 * 24));
                 
                 status[dbName] = {
-                    usage: percentage.toFixed(2) + '%',
+                    usage: 'Sistema baseado em data', // Não mais baseado em percentual
                     queries: usage.queries,
                     lastActivity: usage.lastActivity,
-                    isActive: dbName === this.currentDatabase
+                    daysSinceActivity: daysSinceActivity,
+                    isActive: dbName === this.currentDatabase,
+                    systemMode: 'date-based'
                 };
                 
-                console.log(`✅ Banco ${dbName}: ${percentage.toFixed(2)}% de uso`);
+                console.log(`✅ Banco ${dbName}: ${usage.queries} queries executadas`);
             }
             
             console.log('✅ DatabaseManager: Status obtido com sucesso');
@@ -366,6 +367,33 @@ class DatabaseManager {
         } catch (error) {
             console.error('Erro ao escrever no log:', error.message);
         }
+    }
+
+    async checkDatabasesHealth() {
+        const healthStatus = {};
+        
+        for (const [dbName, connection] of Object.entries(this.connections)) {
+            try {
+                const startTime = Date.now();
+                await connection`SELECT 1 as health_check`;
+                const responseTime = Date.now() - startTime;
+                
+                healthStatus[dbName] = {
+                    connected: true,
+                    responseTime: responseTime,
+                    error: null
+                };
+                
+            } catch (error) {
+                healthStatus[dbName] = {
+                    connected: false,
+                    responseTime: null,
+                    error: error.message
+                };
+            }
+        }
+        
+        return healthStatus;
     }
 
     // Método para ser usado como drop-in replacement do neon

@@ -16,27 +16,35 @@ class BackupScheduler {
         }
 
         this.isRunning = true;
-        console.log('🚀 Iniciando Sistema de Backup Automático NaRégua');
+        console.log('🚀 Iniciando Sistema de Backup Automático por Data');
         
-        // Monitoramento a cada 6 horas
-        const monitoringJob = cron.schedule('0 */6 * * *', async () => {
-            await this.performMonitoring();
+        // Backup automático no dia 24 de cada mês às 3h da manhã
+        const monthlyBackup24Job = cron.schedule('0 3 24 * *', async () => {
+            await this.performMonthlyBackup(24);
         }, {
             scheduled: false,
             timezone: 'America/Sao_Paulo'
         });
 
-        // Backup preventivo diário às 3h da manhã
-        const dailyBackupJob = cron.schedule('0 3 * * *', async () => {
-            await this.performDailyBackup();
+        // Backup automático no dia 25 de cada mês às 3h da manhã
+        const monthlyBackup25Job = cron.schedule('0 3 25 * *', async () => {
+            await this.performMonthlyBackup(25);
         }, {
             scheduled: false,
             timezone: 'America/Sao_Paulo'
         });
 
-        // Verificação de status a cada hora
-        const statusCheckJob = cron.schedule('0 * * * *', async () => {
-            await this.checkSystemStatus();
+        // Alternância automática no dia 25 às 23h de cada mês
+        const monthlySwitchJob = cron.schedule('0 23 25 * *', async () => {
+            await this.performMonthlySwitch();
+        }, {
+            scheduled: false,
+            timezone: 'America/Sao_Paulo'
+        });
+
+        // Verificação de saúde do sistema a cada 12 horas
+        const healthCheckJob = cron.schedule('0 */12 * * *', async () => {
+            await this.performHealthCheck();
         }, {
             scheduled: false,
             timezone: 'America/Sao_Paulo'
@@ -50,19 +58,20 @@ class BackupScheduler {
             timezone: 'America/Sao_Paulo'
         });
 
-        this.jobs = [monitoringJob, dailyBackupJob, statusCheckJob, cleanupJob];
+        this.jobs = [monthlyBackup24Job, monthlyBackup25Job, monthlySwitchJob, healthCheckJob, cleanupJob];
         
         // Iniciar todos os jobs
         this.jobs.forEach(job => job.start());
         
         // Executar verificação inicial
-        setTimeout(() => this.performMonitoring(), 5000);
+        setTimeout(() => this.performHealthCheck(), 5000);
         
-        console.log('✅ Sistema de backup iniciado com sucesso');
+        console.log('✅ Sistema de backup baseado em data iniciado com sucesso');
         console.log('📋 Jobs agendados:');
-        console.log('   - Monitoramento: A cada 6 horas');
-        console.log('   - Backup diário: Todos os dias às 3h');
-        console.log('   - Verificação: A cada hora');
+        console.log('   - Backup dia 24: Todo dia 24 às 3h');
+        console.log('   - Backup dia 25: Todo dia 25 às 3h');
+        console.log('   - Alternância: Todo dia 25 às 23h');
+        console.log('   - Verificação: A cada 12 horas');
         console.log('   - Limpeza: Domingos às 2h');
     }
 
@@ -77,72 +86,110 @@ class BackupScheduler {
         console.log('🛑 Sistema de backup parado');
     }
 
-    async performMonitoring() {
+    async performMonthlyBackup(day) {
         try {
-            await this.dbManager.log('🔍 Iniciando monitoramento automático');
+            await this.dbManager.log(`� Iniciando backup automático do dia ${day} do mês`);
             
-            const status = await this.dbManager.getStatus();
+            const currentDate = new Date();
+            const backupInfo = {
+                day: day,
+                month: currentDate.getMonth() + 1,
+                year: currentDate.getFullYear(),
+                database: this.dbManager.currentDatabase
+            };
             
-            for (const [dbName, dbStatus] of Object.entries(status)) {
-                const usage = parseFloat(dbStatus.usage);
-                const threshold = config.monitoring.backupThreshold * 100;
-                const switchThreshold = config.monitoring.switchThreshold * 100;
-                
-                if (usage >= switchThreshold) {
-                    await this.dbManager.log(`🚨 CRÍTICO: ${dbName} com ${usage}% de uso - Alternando banco!`);
-                    if (dbStatus.isActive) {
-                        await this.dbManager.switchToBackupDatabase();
-                    }
-                } else if (usage >= threshold) {
-                    await this.dbManager.log(`⚠️ ALERTA: ${dbName} com ${usage}% de uso - Iniciando backup`);
-                    if (dbStatus.isActive) {
-                        await this.dbManager.createFullBackup();
-                    }
+            await this.dbManager.log(`📋 Backup programado - Dia ${day}/${backupInfo.month}/${backupInfo.year}`);
+            await this.dbManager.log(`🎯 Banco ativo: ${backupInfo.database.toUpperCase()}`);
+            
+            // Realizar backup completo
+            await this.dbManager.createFullBackup();
+            
+            await this.dbManager.log(`✅ Backup do dia ${day} concluído com sucesso`);
+            
+        } catch (error) {
+            await this.dbManager.log(`❌ Erro no backup do dia ${day}:`, error.message);
+        }
+    }
+
+    async performMonthlySwitch() {
+        try {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth() + 1;
+            const currentYear = currentDate.getFullYear();
+            
+            await this.dbManager.log(`🔄 Iniciando alternância automática mensal - ${currentMonth}/${currentYear}`);
+            await this.dbManager.log(`📊 Banco atual antes da troca: ${this.dbManager.currentDatabase.toUpperCase()}`);
+            
+            // Fazer backup final antes da troca
+            await this.dbManager.log('📦 Realizando backup final antes da alternância');
+            await this.dbManager.createFullBackup();
+            
+            // Realizar a troca
+            await this.dbManager.switchToBackupDatabase();
+            
+            await this.dbManager.log(`✅ Alternância mensal concluída - Novo banco ativo: ${this.dbManager.currentDatabase.toUpperCase()}`);
+            await this.dbManager.log(`📅 Próxima alternância: 25/${currentMonth + 1 > 12 ? 1 : currentMonth + 1}/${currentMonth + 1 > 12 ? currentYear + 1 : currentYear} às 23:00`);
+            
+        } catch (error) {
+            await this.dbManager.log('❌ Erro na alternância mensal:', error.message);
+        }
+    }
+
+    async performHealthCheck() {
+        try {
+            await this.dbManager.log('� Verificação de saúde do sistema');
+            
+            const currentDate = new Date();
+            const currentDay = currentDate.getDate();
+            const currentHour = currentDate.getHours();
+            
+            // Verificar conexões com ambos os bancos
+            const healthStatus = await this.dbManager.checkDatabasesHealth();
+            
+            for (const [dbName, status] of Object.entries(healthStatus)) {
+                if (status.connected) {
+                    await this.dbManager.log(`✅ ${dbName.toUpperCase()}: Conectado - ${status.responseTime}ms`);
                 } else {
-                    await this.dbManager.log(`✅ ${dbName}: ${usage}% de uso - Normal`);
+                    await this.dbManager.log(`❌ ${dbName.toUpperCase()}: Desconectado - ${status.error}`);
                 }
             }
             
-        } catch (error) {
-            await this.dbManager.log('❌ Erro no monitoramento:', error.message);
-        }
-    }
-
-    async performDailyBackup() {
-        try {
-            await this.dbManager.log('📦 Iniciando backup diário preventivo');
+            // Informar próximos eventos
+            let nextBackup = '';
+            let nextSwitch = '';
             
-            const currentUsage = this.dbManager.getUsagePercentage(this.dbManager.currentDatabase);
-            
-            if (currentUsage > 50) { // Fazer backup se uso > 50%
-                await this.dbManager.createFullBackup();
-                await this.dbManager.log('✅ Backup diário concluído');
+            if (currentDay < 24) {
+                nextBackup = `dia 24 às 3h`;
+                nextSwitch = `dia 25 às 23h`;
+            } else if (currentDay === 24) {
+                if (currentHour < 3) {
+                    nextBackup = `hoje às 3h`;
+                } else {
+                    nextBackup = `dia 25 às 3h`;
+                }
+                nextSwitch = `dia 25 às 23h`;
+            } else if (currentDay === 25) {
+                if (currentHour < 3) {
+                    nextBackup = `hoje às 3h`;
+                } else {
+                    nextBackup = `próximo mês dia 24`;
+                }
+                if (currentHour < 23) {
+                    nextSwitch = `hoje às 23h`;
+                } else {
+                    nextSwitch = `próximo mês dia 25`;
+                }
             } else {
-                await this.dbManager.log('ℹ️ Backup diário dispensado - uso baixo');
+                nextBackup = `próximo mês dia 24`;
+                nextSwitch = `próximo mês dia 25`;
             }
             
-        } catch (error) {
-            await this.dbManager.log('❌ Erro no backup diário:', error.message);
-        }
-    }
-
-    async checkSystemStatus() {
-        try {
-            const status = await this.dbManager.getStatus();
-            const currentDb = this.dbManager.currentDatabase;
-            const usage = this.dbManager.getUsagePercentage(currentDb);
-            
-            if (usage > 95) {
-                await this.dbManager.log(`🚨 USO CRÍTICO: ${currentDb} com ${usage.toFixed(2)}%`);
-            } else if (usage > 80) {
-                await this.dbManager.log(`⚠️ USO ALTO: ${currentDb} com ${usage.toFixed(2)}%`);
-            }
-            
-            // Log resumido do status
-            await this.dbManager.log(`📊 Status: ${currentDb.toUpperCase()} ativo (${usage.toFixed(1)}%)`);
+            await this.dbManager.log(`📅 Próximo backup: ${nextBackup}`);
+            await this.dbManager.log(`🔄 Próxima alternância: ${nextSwitch}`);
+            await this.dbManager.log(`� Banco ativo atual: ${this.dbManager.currentDatabase.toUpperCase()}`);
             
         } catch (error) {
-            await this.dbManager.log('❌ Erro na verificação de status:', error.message);
+            await this.dbManager.log('❌ Erro na verificação de saúde:', error.message);
         }
     }
 
@@ -201,12 +248,52 @@ class BackupScheduler {
             
             // Inicializar banco manager se necessário
             if (!this.dbManager.usageLoaded) {
-                console.log('📂 Carregando dados de uso...');
+                console.log('📂 Carregando dados do sistema...');
                 await this.dbManager.ensureUsageLoaded();
             }
             
             const status = await this.dbManager.getStatus();
             console.log('✅ Status dos bancos obtido');
+            
+            const currentDate = new Date();
+            const currentDay = currentDate.getDate();
+            const currentHour = currentDate.getHours();
+            
+            // Calcular próximos eventos
+            let nextBackupDate = '';
+            let nextSwitchDate = '';
+            
+            if (currentDay < 24) {
+                nextBackupDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-24 03:00`;
+                nextSwitchDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-25 23:00`;
+            } else if (currentDay === 24) {
+                if (currentHour < 3) {
+                    nextBackupDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-24 03:00`;
+                } else {
+                    nextBackupDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-25 03:00`;
+                }
+                nextSwitchDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-25 23:00`;
+            } else if (currentDay === 25) {
+                if (currentHour < 3) {
+                    nextBackupDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-25 03:00`;
+                } else {
+                    const nextMonth = currentDate.getMonth() + 2 > 12 ? 1 : currentDate.getMonth() + 2;
+                    const nextYear = currentDate.getMonth() + 2 > 12 ? currentDate.getFullYear() + 1 : currentDate.getFullYear();
+                    nextBackupDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-24 03:00`;
+                }
+                if (currentHour < 23) {
+                    nextSwitchDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-25 23:00`;
+                } else {
+                    const nextMonth = currentDate.getMonth() + 2 > 12 ? 1 : currentDate.getMonth() + 2;
+                    const nextYear = currentDate.getMonth() + 2 > 12 ? currentDate.getFullYear() + 1 : currentDate.getFullYear();
+                    nextSwitchDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-25 23:00`;
+                }
+            } else {
+                const nextMonth = currentDate.getMonth() + 2 > 12 ? 1 : currentDate.getMonth() + 2;
+                const nextYear = currentDate.getMonth() + 2 > 12 ? currentDate.getFullYear() + 1 : currentDate.getFullYear();
+                nextBackupDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-24 03:00`;
+                nextSwitchDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-25 23:00`;
+            }
             
             const report = {
                 timestamp: new Date().toISOString(),
@@ -214,12 +301,21 @@ class BackupScheduler {
                 databases: status,
                 scheduler: {
                     isRunning: this.isRunning,
-                    jobsCount: this.jobs.length
+                    jobsCount: this.jobs.length,
+                    systemType: 'Date-based Automatic Backup System'
+                },
+                schedule: {
+                    nextBackup: nextBackupDate,
+                    nextSwitch: nextSwitchDate,
+                    backupDays: [24, 25],
+                    switchDay: 25,
+                    switchTime: '23:00'
                 },
                 config: {
-                    backupThreshold: config.monitoring.backupThreshold * 100 + '%',
-                    switchThreshold: config.monitoring.switchThreshold * 100 + '%',
-                    checkInterval: config.monitoring.checkInterval / (60 * 60 * 1000) + 'h'
+                    systemMode: 'Backup automático baseado em data',
+                    backupSchedule: 'Dias 24 e 25 de cada mês às 3h',
+                    switchSchedule: 'Dia 25 de cada mês às 23h',
+                    timezone: 'America/Sao_Paulo'
                 }
             };
             

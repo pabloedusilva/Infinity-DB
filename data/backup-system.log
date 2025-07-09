@@ -331,3 +331,114 @@
 [2025-07-09T10:31:48.123Z] ✅ Banco alternado para secondary
 [2025-07-09T10:31:48.124Z] 🔄 Sistema NaRégua: Banco alternado para SECONDARY {"timestamp":"2025-07-09T10:31:48.124Z","previousDb":"primary","currentDb":"secondary","usagePercentage":0.00457953216374269}
 [2025-07-09T10:31:48.132Z] ✅ Troca forçada concluída
+[2025-07-09T10:51:58.050Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T10:52:01.151Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T10:52:01.157Z] 📊 Dados de uso carregados
+[2025-07-09T10:52:03.123Z] 🔍 Iniciando monitoramento automático
+[2025-07-09T10:52:03.125Z] 📊 Dados de uso carregados
+[2025-07-09T10:52:03.126Z] ✅ primary: 0% de uso - Normal
+[2025-07-09T10:52:03.127Z] ✅ secondary: 0% de uso - Normal
+[2025-07-09T10:55:28.474Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T10:55:31.514Z] 📊 Dados de uso carregados
+[2025-07-09T10:55:33.501Z] 🔍 Iniciando monitoramento automático
+[2025-07-09T10:55:33.508Z] ✅ primary: 0% de uso - Normal
+[2025-07-09T10:55:33.509Z] ✅ secondary: 0% de uso - Normal
+[2025-07-09T10:59:50.492Z] 🔧 BACKUP FORÇADO INICIADO
+[2025-07-09T10:59:50.520Z] 📦 Iniciando backup completo...
+[2025-07-09T10:59:50.520Z] 📋 Backup: primary → secondary
+[2025-07-09T10:59:50.520Z] 📋 Fazendo backup da tabela: usuarios
+[2025-07-09T10:59:51.797Z] ✅ Backup de usuarios concluído (1 registros)
+[2025-07-09T10:59:51.798Z] 📋 Fazendo backup da tabela: agendamentos
+[2025-07-09T10:59:52.604Z] ✅ Backup de agendamentos concluído (28 registros)
+[2025-07-09T10:59:52.604Z] 📋 Fazendo backup da tabela: clientes
+[2025-07-09T10:59:52.713Z] ✅ Backup de clientes concluído (2 registros)
+[2025-07-09T10:59:52.714Z] 📋 Fazendo backup da tabela: servicos
+[2025-07-09T10:59:53.246Z] ✅ Backup de servicos concluído (9 registros)
+[2025-07-09T10:59:53.246Z] 📋 Fazendo backup da tabela: profissionais
+[2025-07-09T10:59:53.323Z] ✅ Backup de profissionais concluído (1 registros)
+[2025-07-09T10:59:53.323Z] 📋 Fazendo backup da tabela: barbearia
+[2025-07-09T10:59:53.405Z] ✅ Backup de barbearia concluído (1 registros)
+[2025-07-09T10:59:53.406Z] 📋 Fazendo backup da tabela: horarios_turnos
+[2025-07-09T10:59:53.536Z] ✅ Backup de horarios_turnos concluído (3 registros)
+[2025-07-09T10:59:53.537Z] 📋 Fazendo backup da tabela: notificacoes
+[2025-07-09T10:59:53.662Z] ✅ Backup de notificacoes concluído (3 registros)
+[2025-07-09T10:59:53.663Z] 📋 Fazendo backup da tabela: wallpapers
+[2025-07-09T10:59:54.113Z] ✅ Backup de wallpapers concluído (16 registros)
+[2025-07-09T10:59:54.113Z] 📋 Fazendo backup da tabela: servico_imagens
+[2025-07-09T10:59:54.967Z] ✅ Backup de servico_imagens concluído (32 registros)
+[2025-07-09T10:59:54.967Z] 📋 Fazendo backup da tabela: alertas_promos
+[2025-07-09T10:59:55.126Z] ✅ Backup de alertas_promos concluído (3 registros)
+[2025-07-09T10:59:55.128Z] 📋 Fazendo backup da tabela: subscriptions
+[2025-07-09T10:59:55.155Z] ❌ Erro no backup da tabela subscriptions: "relation \"subscriptions\" does not exist"
+[2025-07-09T10:59:55.157Z] ✅ Backup forçado concluído
+[2025-07-09T10:59:55.156Z] ✅ Backup completo finalizado
+[2025-07-09T11:00:00.039Z] 📊 Status: PRIMARY ativo (0.0%)
+[2025-07-09T11:00:00.042Z] 📊 Status: PRIMARY ativo (0.0%)
+[2025-07-09T11:09:37.382Z] 🔧 BACKUP FORÇADO INICIADO
+[2025-07-09T11:09:37.655Z] 📦 Iniciando backup completo...
+[2025-07-09T11:09:37.656Z] 📋 Fazendo backup da tabela: usuarios
+[2025-07-09T11:09:37.656Z] 📋 Backup: primary → secondary
+[2025-07-09T11:09:38.853Z] ✅ Backup de usuarios concluído (1 registros)
+[2025-07-09T11:09:38.854Z] 📋 Fazendo backup da tabela: agendamentos
+[2025-07-09T11:09:39.625Z] ✅ Backup de agendamentos concluído (28 registros)
+[2025-07-09T11:09:39.626Z] 📋 Fazendo backup da tabela: clientes
+[2025-07-09T11:09:39.733Z] ✅ Backup de clientes concluído (2 registros)
+[2025-07-09T11:09:39.734Z] 📋 Fazendo backup da tabela: servicos
+[2025-07-09T11:09:40.016Z] ✅ Backup de servicos concluído (9 registros)
+[2025-07-09T11:09:40.017Z] 📋 Fazendo backup da tabela: profissionais
+[2025-07-09T11:09:40.097Z] ✅ Backup de profissionais concluído (1 registros)
+[2025-07-09T11:09:40.097Z] 📋 Fazendo backup da tabela: barbearia
+[2025-07-09T11:09:40.177Z] ✅ Backup de barbearia concluído (1 registros)
+[2025-07-09T11:09:40.177Z] 📋 Fazendo backup da tabela: horarios_turnos
+[2025-07-09T11:09:40.305Z] ✅ Backup de horarios_turnos concluído (3 registros)
+[2025-07-09T11:09:40.306Z] 📋 Fazendo backup da tabela: notificacoes
+[2025-07-09T11:09:40.436Z] ✅ Backup de notificacoes concluído (3 registros)
+[2025-07-09T11:09:40.437Z] 📋 Fazendo backup da tabela: wallpapers
+[2025-07-09T11:09:40.896Z] ✅ Backup de wallpapers concluído (16 registros)
+[2025-07-09T11:09:40.897Z] 📋 Fazendo backup da tabela: servico_imagens
+[2025-07-09T11:09:41.987Z] ✅ Backup de servico_imagens concluído (32 registros)
+[2025-07-09T11:09:41.988Z] 📋 Fazendo backup da tabela: alertas_promos
+[2025-07-09T11:09:42.110Z] 📋 Fazendo backup da tabela: subscriptions
+[2025-07-09T11:09:42.110Z] ✅ Backup de alertas_promos concluído (3 registros)
+[2025-07-09T11:09:42.132Z] ❌ Erro no backup da tabela subscriptions: "relation \"subscriptions\" does not exist"
+[2025-07-09T11:09:42.132Z] ✅ Backup completo finalizado
+[2025-07-09T11:09:42.133Z] ✅ Backup forçado concluído
+[2025-07-09T11:09:51.042Z] 🔧 TROCA FORÇADA DE BANCO INICIADA
+[2025-07-09T11:09:51.044Z] 🔄 Alternando de primary para secondary
+[2025-07-09T11:09:51.045Z] 📦 Iniciando backup completo...
+[2025-07-09T11:09:51.045Z] 📋 Backup: primary → secondary
+[2025-07-09T11:09:51.045Z] 📋 Fazendo backup da tabela: usuarios
+[2025-07-09T11:09:51.234Z] ✅ Backup de usuarios concluído (1 registros)
+[2025-07-09T11:09:51.234Z] 📋 Fazendo backup da tabela: agendamentos
+[2025-07-09T11:09:51.979Z] ✅ Backup de agendamentos concluído (28 registros)
+[2025-07-09T11:09:51.979Z] 📋 Fazendo backup da tabela: clientes
+[2025-07-09T11:09:52.081Z] ✅ Backup de clientes concluído (2 registros)
+[2025-07-09T11:09:52.082Z] 📋 Fazendo backup da tabela: servicos
+[2025-07-09T11:09:52.356Z] ✅ Backup de servicos concluído (9 registros)
+[2025-07-09T11:09:52.357Z] 📋 Fazendo backup da tabela: profissionais
+[2025-07-09T11:09:52.433Z] ✅ Backup de profissionais concluído (1 registros)
+[2025-07-09T11:09:52.433Z] 📋 Fazendo backup da tabela: barbearia
+[2025-07-09T11:09:52.509Z] ✅ Backup de barbearia concluído (1 registros)
+[2025-07-09T11:09:52.510Z] 📋 Fazendo backup da tabela: horarios_turnos
+[2025-07-09T11:09:52.632Z] ✅ Backup de horarios_turnos concluído (3 registros)
+[2025-07-09T11:09:52.632Z] 📋 Fazendo backup da tabela: notificacoes
+[2025-07-09T11:09:52.761Z] ✅ Backup de notificacoes concluído (3 registros)
+[2025-07-09T11:09:52.762Z] 📋 Fazendo backup da tabela: wallpapers
+[2025-07-09T11:09:53.218Z] ✅ Backup de wallpapers concluído (16 registros)
+[2025-07-09T11:09:53.219Z] 📋 Fazendo backup da tabela: servico_imagens
+[2025-07-09T11:09:54.068Z] 📋 Fazendo backup da tabela: alertas_promos
+[2025-07-09T11:09:54.067Z] ✅ Backup de servico_imagens concluído (32 registros)
+[2025-07-09T11:09:54.190Z] ✅ Backup de alertas_promos concluído (3 registros)
+[2025-07-09T11:09:54.191Z] 📋 Fazendo backup da tabela: subscriptions
+[2025-07-09T11:09:54.215Z] ❌ Erro no backup da tabela subscriptions: "relation \"subscriptions\" does not exist"
+[2025-07-09T11:09:54.216Z] ✅ Backup completo finalizado
+[2025-07-09T11:09:54.216Z] ✅ Banco alternado para secondary
+[2025-07-09T11:09:54.217Z] 🔄 Sistema NaRégua: Banco alternado para SECONDARY {"timestamp":"2025-07-09T11:09:54.217Z","previousDb":"primary","currentDb":"secondary","usagePercentage":0.00457953216374269}
+[2025-07-09T11:09:54.220Z] ✅ Troca forçada concluída
+[2025-07-09T11:27:16.564Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T11:27:20.330Z] ✅ Conexões com bancos inicializadas
+[2025-07-09T11:27:20.338Z] 📊 Dados de uso carregados
+[2025-07-09T11:27:21.639Z] 🔍 Iniciando monitoramento automático
+[2025-07-09T11:27:21.642Z] 📊 Dados de uso carregados
+[2025-07-09T11:27:21.643Z] ✅ primary: 0% de uso - Normal
+[2025-07-09T11:27:21.645Z] ✅ secondary: 0% de uso - Normal
